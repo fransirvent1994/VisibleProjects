@@ -1,6 +1,9 @@
 from random import choice
 
-words = ["baker", "dino", "craftsman", "orangutan", "elephant", "newsletter", "building"]
+words = ["baker", "dino", "craftsman",
+         "orangutan", "elephant", "newsletter",
+         "building", "developer", "singer"]
+
 correct_letters = []
 wrong_letters = []
 tries = 6
@@ -10,7 +13,7 @@ game_over = False
 # This function chooses a random word from the list of words
 def choose_word(word_list):
     chosen_word = choice(word_list)
-    unique_letters = len(set(chosen_word)) # contains the count of different letters in our word
+    unique_letters = len(set(chosen_word))  # contains the count of different letters in our word
 
     return chosen_word, unique_letters
 
@@ -29,21 +32,23 @@ def ask_letter():
 
     return chosen_letter
 
+
 # Displays on the screen the underscores representing the hidden word
 def show_new_table(chosen_word):
     hidden_list = []
 
-    for letter in chosen_word: # choose a word
-        if letter in correct_letters: # check if the letter is correct in the hidden word
-            hidden_list.append(letter) # show the letter
+    for letter in chosen_word:  # choose a word
+        if letter in correct_letters:  # check if the letter is correct in the hidden word
+            hidden_list.append(letter)  # show the letter
         else:
-            hidden_list.append('_') # show an underscore for the letter
+            hidden_list.append('_')  # show an underscore for the letter
 
-    print(''.join(hidden_list)) # add a space between letters and use join to join the elements
+    print(''.join(hidden_list))  # add a space between letters and use join to join the elements
+
 
 # Check if the letter chosen by the user is in the word or not, update lives, check for win or loss, etc.
 def check_letter(chosen_letter, hidden_word, lives, coincidences):
-    end = False # The game is not over
+    end = False  # The game is not over
 
     if chosen_letter in hidden_word and chosen_letter not in correct_letters: # hits
         correct_letters.append(chosen_letter)
@@ -51,7 +56,7 @@ def check_letter(chosen_letter, hidden_word, lives, coincidences):
     elif chosen_letter in hidden_word and chosen_letter in correct_letters:
         print("You have already used that letter, use another one")
     else:
-        wrong_letters.append(chosen_letter) # misses
+        wrong_letters.append(chosen_letter)  # missesd
         lives -= 1
 
     # Check if the player has lost or won
@@ -62,11 +67,13 @@ def check_letter(chosen_letter, hidden_word, lives, coincidences):
 
     return lives, end, coincidences
 
+
 def lose():
     print("You have run out of lives.")
     print("The hidden word was: " + word)
 
     return True
+
 
 def win(hidden_word):
     show_new_table(hidden_word)
@@ -74,11 +81,33 @@ def win(hidden_word):
 
     return True
 
+
 # Let the system choose one of the words
 word, unique_letters = choose_word(words)
 
+
 # Prompt the user to choose a letter
 while not game_over:
+    #  Hints
+    if word == "baker":
+        print("Gotta work very early to prepare the oven")
+    elif word == "dino":
+        print("Don`t move, it sees the movement")
+    elif word == "craftsman":
+        print("He will make you a boat or a house")
+    elif word == "orangutan":
+        print("It likes bananas and Tarzan")
+    elif word == "elephant":
+        print("Has a very good memory")
+    elif word == "newsletter":
+        print("Some of them are fake")
+    elif word == "building":
+        print("They collapse without manteinment")
+    elif word == "developer":
+        print("You´re becoming one")
+    elif word == "singer":
+        print("I bet you´re not very good")
+
     print('\n' + '*' * 20 + '\n')
     show_new_table(word)
     print('\n')
