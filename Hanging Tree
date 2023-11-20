@@ -4,118 +4,135 @@ words = ["baker", "dino", "craftsman",
          "orangutan", "elephant", "newsletter",
          "building", "developer", "singer"]
 
-correct_letters = []
-wrong_letters = []
-tries = 6
-hits = 0
-game_over = False
+def play_hangman():
+    correct_letters = []
+    wrong_letters = []
+    tries = 6
+    hits = 0
+    game_over = False
 
-# This function chooses a random word from the list of words
-def choose_word(word_list):
-    chosen_word = choice(word_list)
-    unique_letters = len(set(chosen_word))  # contains the count of different letters in our word
+    # This function chooses a random word from the list of words
 
-    return chosen_word, unique_letters
+    def choose_word(word_list):
+        chosen_word = choice(word_list)
+        unique_letters = len(set(chosen_word))  # contains the count of different letters in our word
 
-# Function to prompt the user to choose a letter repeatedly until a win or loss occurs
-def ask_letter():
-    chosen_letter = ''
-    available = False
-    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+        return chosen_word, unique_letters
 
-    while not available:
-        chosen_letter = input("Choose a letter: ").lower()
-        if chosen_letter in alphabet and len(chosen_letter) == 1:
-            available = True
+    # Function to prompt the user to choose a letter repeatedly until a win or loss occurs
+
+    def ask_letter():
+        chosen_letter = ''
+        available = False
+        alphabet = 'abcdefghijklmnopqrstuvwxyz'
+
+        while not available:
+            chosen_letter = input("Choose a letter: ").lower()
+            if chosen_letter in alphabet and len(chosen_letter) == 1:
+                available = True
+            else:
+                print("You have not chosen a correct letter")
+
+        return chosen_letter
+
+    # Displays on the screen the underscores representing the hidden word
+    def show_new_table(chosen_word):
+        hidden_list = []
+
+        for letter in chosen_word:  # choose a word
+            if letter in correct_letters:  # check if the letter is correct in the hidden word
+                hidden_list.append(letter)  # show the letter
+            else:
+                hidden_list.append('_')  # show an underscore for the letter
+
+        print(''.join(hidden_list))  # add a space between letters and use join to join the elements
+
+    # Check if the letter chosen by the user is in the word or not, update lives, check for win or loss, etc.
+    def check_letter(chosen_letter, hidden_word, lives, coincidences):
+        end = False  # The game is not over
+
+        if chosen_letter in hidden_word and chosen_letter not in correct_letters:  # hits
+            correct_letters.append(chosen_letter)
+            coincidences += 1
+        elif chosen_letter in hidden_word and chosen_letter in correct_letters:
+            print("You have already used that letter, use another one")
+            lives -= 1
         else:
-            print("You have not chosen a correct letter")
+            wrong_letters.append(chosen_letter)  # missed
+            lives -= 1
 
-    return chosen_letter
+        # Check if the player has lost or won
+        if lives == 0:
+            end = lose()
+        elif coincidences == unique_letters:
+            end = win(hidden_word)
+
+        return lives, end, coincidences
+
+    def lose():
+        print("You have run out of lives.")
+        print("The hidden word was: " + word)
+
+        return True
+
+    def win(hidden_word):
+        show_new_table(hidden_word)
+        print("Congratulations, you have found the word!")
+
+        return True
+
+    # Let the system choose one of the words
+    word, unique_letters = choose_word(words)
+
+    # Prompt the user to choose a letter
+    while not game_over:
+        #  Hints
+        if word == "baker":
+            print("Hint: Gotta work very early to prepare the oven")
+        elif word == "dino":
+            print("Hint: Don`t move, it sees the movement")
+        elif word == "craftsman":
+            print("Hint: He will make you a boat or a house")
+        elif word == "orangutan":
+            print("Hint: It likes bananas and Tarzan")
+        elif word == "elephant":
+            print("Hint: Has a very good memory")
+        elif word == "newsletter":
+            print("Hint: Some of them are fake")
+        elif word == "building":
+            print("Hint: They collapse without maintenance")
+        elif word == "developer":
+            print("Hint: You´re becoming one")
+        elif word == "singer":
+            print("Hint: I bet you´re not very good")
+
+        print('\n' + '*' * 20 + '\n')
+        show_new_table(word)
+        print('\n')
+        print("Incorrect letters: " + " ".join(wrong_letters))
+        print(f"Lives: {tries}")
+        print('\n' + '*' * 20 + '\n')
+        letter = ask_letter()
+
+        tries, finished, hits = check_letter(letter, word, tries, hits)
+
+        game_over = finished
+
+    return game_over
 
 
-# Displays on the screen the underscores representing the hidden word
-def show_new_table(chosen_word):
-    hidden_list = []
-
-    for letter in chosen_word:  # choose a word
-        if letter in correct_letters:  # check if the letter is correct in the hidden word
-            hidden_list.append(letter)  # show the letter
+def restart_game():
+    while True:
+        choice = input("Do you want to play again? ").lower()
+        if choice == 'y':
+            play_hangman()
+        elif choice == 'n':
+            print("Thanks for playing.")
+            break
         else:
-            hidden_list.append('_')  # show an underscore for the letter
-
-    print(''.join(hidden_list))  # add a space between letters and use join to join the elements
+            print("Please, insert a valid character: y or n")
 
 
-# Check if the letter chosen by the user is in the word or not, update lives, check for win or loss, etc.
-def check_letter(chosen_letter, hidden_word, lives, coincidences):
-    end = False  # The game is not over
-
-    if chosen_letter in hidden_word and chosen_letter not in correct_letters: # hits
-        correct_letters.append(chosen_letter)
-        coincidences += 1
-    elif chosen_letter in hidden_word and chosen_letter in correct_letters:
-        print("You have already used that letter, use another one")
-    else:
-        wrong_letters.append(chosen_letter)  # missesd
-        lives -= 1
-
-    # Check if the player has lost or won
-    if lives == 0:
-        end = lose()
-    elif coincidences == unique_letters:
-        end = win(hidden_word)
-
-    return lives, end, coincidences
-
-
-def lose():
-    print("You have run out of lives.")
-    print("The hidden word was: " + word)
-
-    return True
-
-
-def win(hidden_word):
-    show_new_table(hidden_word)
-    print("Congratulations, you have found the word!")
-
-    return True
-
-
-# Let the system choose one of the words
-word, unique_letters = choose_word(words)
-
-
-# Prompt the user to choose a letter
-while not game_over:
-    #  Hints
-    if word == "baker":
-        print("Gotta work very early to prepare the oven")
-    elif word == "dino":
-        print("Don`t move, it sees the movement")
-    elif word == "craftsman":
-        print("He will make you a boat or a house")
-    elif word == "orangutan":
-        print("It likes bananas and Tarzan")
-    elif word == "elephant":
-        print("Has a very good memory")
-    elif word == "newsletter":
-        print("Some of them are fake")
-    elif word == "building":
-        print("They collapse without manteinment")
-    elif word == "developer":
-        print("You´re becoming one")
-    elif word == "singer":
-        print("I bet you´re not very good")
-
-    print('\n' + '*' * 20 + '\n')
-    show_new_table(word)
-    print('\n')
-    print("Incorrect letters: " + " ".join(wrong_letters))
-    print(f"Lives: {tries}")
-    print('\n' + '*' * 20 + '\n')
-    letter = ask_letter()
-
-    tries, finished, hits = check_letter(letter, word, tries, hits)
-
-    game_over = finished
+# Start the game
+play_hangman()
+restart_game()
