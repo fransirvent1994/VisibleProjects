@@ -48,7 +48,7 @@ class HangmanGame:
 
             self.update_labels()
 
-# Function to choose the word randomly and be shown as "--" 
+# Function to choose the word randomly and be shown as "--"
     def choose_word(self, word_list):
         chosen_word = choice(word_list)
         unique_letters = len(set(chosen_word))
