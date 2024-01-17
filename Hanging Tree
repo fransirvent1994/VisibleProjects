@@ -1,138 +1,131 @@
-from random import choice
+# First we import the libraries
 
+from random import choice # Random for random choices
+import tkinter as tk # Tkinter for display a window
+
+# Here we got the possible words, which one of them, randomly, will be chosen
 words = ["baker", "dino", "craftsman",
          "orangutan", "elephant", "newsletter",
          "building", "developer", "singer"]
 
-def play_hangman():
-    correct_letters = []
-    wrong_letters = []
-    tries = 6
-    hits = 0
-    game_over = False
+# Define the game as an object
+class HangmanGame:
+    def __init__(self, master):
+            self.master = master # For window
+            self.master.title("Hangman Game") # Game title
+            self.correct_letters = [] # Correct letters will be displayed
+            self.wrong_letters = [] # Wrong letters too
+            self.tries = 6 # Max of tries
+            self.hits = 0 # Game finished (win)
+            self.game_over = False # Game finished (lose)
 
-    # This function chooses a random word from the list of words
+            self.word, self.unique_letters = self.choose_word(words) # Choose word
 
-    def choose_word(word_list):
+            self.word_label = tk.Label(master, text=self.get_display_word())
+            self.word_label.pack() # This shows the hidden word as "---" at window
+
+            self.hints_label = tk.Label(master, text=self.get_hint())
+            self.hints_label.pack() # It gives a hint at window
+
+            self.incorrect_label = tk.Label(master, text="Incorrect letters: ")
+            self.incorrect_label.pack() # It shows the incorrect letters at window
+
+            self.lives_label = tk.Label(master, text=f"Lives: {self.tries}")
+            self.lives_label.pack() # Num of lives at window
+
+            self.entry_label = tk.Label(master, text="Enter a letter:")
+            self.entry_label.pack() # Enter a letter input at window
+
+            self.entry_var = tk.StringVar()
+            self.entry = tk.Entry(master, textvariable=self.entry_var)
+            self.entry.pack() # Allows to enter a text as string at window
+
+            self.submit_button = tk.Button(master, text="Submit", command=self.submit_letter)
+            self.submit_button.pack() # Submit button to submit the letter at window
+
+            self.restart_button = tk.Button(master, text="Restart", command=self.restart_game)
+            self.restart_button.pack() # Restarts the game at window
+
+            self.update_labels()
+
+# Function to choose the word randomly and be shown as "--"
+    def choose_word(self, word_list):
         chosen_word = choice(word_list)
-        unique_letters = len(set(chosen_word))  # contains the count of different letters in our word
-
+        unique_letters = len(set(chosen_word))
         return chosen_word, unique_letters
 
-    # Function to prompt the user to choose a letter repeatedly until a win or loss occurs
+# Display the world with spaces between the letters
+    def get_display_word(self):
+        return ''.join([letter if letter in self.correct_letters else '_' for letter in self.word])
 
-    def ask_letter():
-        chosen_letter = ''
-        available = False
-        alphabet = 'abcdefghijklmnopqrstuvwxyz'
+# Shows hints for each word
+    def get_hint(self):
+        hints = {
+            "baker": "Gotta work very early to prepare the oven",
+            "dino": "Don't move, it sees the movement",
+            "craftsman": "He will make you a boat or a house",
+            "orangutan": "Likes bananas and Tarzan",
+            "elephant": "Has a very good memory",
+            "newsletter": "Some of them are fake",
+            "building": "They collapse without maintenance",
+            "developer": "You're becoming one",
+            "singer": "I bet you're not very good"
+        }
+        return hints.get(self.word, "No hint available")
 
-        while not available:
-            chosen_letter = input("Choose a letter: ").lower()
-            if chosen_letter in alphabet and len(chosen_letter) == 1:
-                available = True
-            else:
-                print("You have not chosen a correct letter")
+    def update_labels(self):
+        self.word_label.config(text=self.get_display_word())
+        self.hints_label.config(text=self.get_hint())
+        self.incorrect_label.config(text="Incorrect letters: " + " ".join(self.wrong_letters))
+        self.lives_label.config(text=f"Lives: {self.tries}")
 
-        return chosen_letter
+    def submit_letter(self):
+        letter = self.entry_var.get().lower()
 
-    # Displays on the screen the underscores representing the hidden word
-    def show_new_table(chosen_word):
-        hidden_list = []
+        if letter.isalpha() and len(letter) == 1:
+            self.check_letter(letter)
+        else:
+            print("Please enter a valid letter.")
 
-        for letter in chosen_word:  # choose a word
-            if letter in correct_letters:  # check if the letter is correct in the hidden word
-                hidden_list.append(letter)  # show the letter
-            else:
-                hidden_list.append('_')  # show an underscore for the letter
+        self.entry_var.set("")
+        self.update_labels()
 
-        print(''.join(hidden_list))  # add a space between letters and use join to join the elements
-
-    # Check if the letter chosen by the user is in the word or not, update lives, check for win or loss, etc.
-    def check_letter(chosen_letter, hidden_word, lives, coincidences):
-        end = False  # The game is not over
-
-        if chosen_letter in hidden_word and chosen_letter not in correct_letters:  # hits
-            correct_letters.append(chosen_letter)
-            coincidences += 1
-        elif chosen_letter in hidden_word and chosen_letter in correct_letters:
+    def check_letter(self, chosen_letter):
+        if chosen_letter in self.correct_letters or chosen_letter in self.wrong_letters:
             print("You have already used that letter, use another one")
-            lives -= 1
+            self.tries -= 1
+        elif chosen_letter in self.word:
+            self.correct_letters.append(chosen_letter)
+            self.hits += 1
         else:
-            wrong_letters.append(chosen_letter)  # missed
-            lives -= 1
+            self.wrong_letters.append(chosen_letter)
+            self.tries -= 1
 
-        # Check if the player has lost or won
-        if lives == 0:
-            end = lose()
-        elif coincidences == unique_letters:
-            end = win(hidden_word)
+        if self.tries == 0:
+            self.game_over = self.lose()
+        elif self.hits == self.unique_letters:
+            self.game_over = self.win()
 
-        return lives, end, coincidences
-
-    def lose():
+    def lose(self):
         print("You have run out of lives.")
-        print("The hidden word was: " + word)
-
+        print("The hidden word was: " + self.word)
         return True
 
-    def win(hidden_word):
-        show_new_table(hidden_word)
+    def win(self):
         print("Congratulations, you have found the word!")
-
         return True
 
-    # Let the system choose one of the words
-    word, unique_letters = choose_word(words)
+    def restart_game(self):
+        self.master.destroy()
+        root = tk.Tk()
+        game = HangmanGame(root)
+        root.mainloop()
 
-    # Prompt the user to choose a letter
-    while not game_over:
-        #  Hints
-        if word == "baker":
-            print("Hint: Gotta work very early to prepare the oven")
-        elif word == "dino":
-            print("Hint: Don`t move, it sees the movement")
-        elif word == "craftsman":
-            print("Hint: He will make you a boat or a house")
-        elif word == "orangutan":
-            print("Hint: It likes bananas and Tarzan")
-        elif word == "elephant":
-            print("Hint: Has a very good memory")
-        elif word == "newsletter":
-            print("Hint: Some of them are fake")
-        elif word == "building":
-            print("Hint: They collapse without maintenance")
-        elif word == "developer":
-            print("Hint: You´re becoming one")
-        elif word == "singer":
-            print("Hint: I bet you´re not very good")
+# Create the main window
+root = tk.Tk()
 
-        print('\n' + '*' * 20 + '\n')
-        show_new_table(word)
-        print('\n')
-        print("Incorrect letters: " + " ".join(wrong_letters))
-        print(f"Lives: {tries}")
-        print('\n' + '*' * 20 + '\n')
-        letter = ask_letter()
+# Create an instance of the HangmanGame class
+hangman_game = HangmanGame(root)
 
-        tries, finished, hits = check_letter(letter, word, tries, hits)
-
-        game_over = finished
-
-    return game_over
-
-
-def restart_game():
-    while True:
-        choice = input("Do you want to play again? ").lower()
-        if choice == 'y':
-            play_hangman()
-        elif choice == 'n':
-            print("Thanks for playing.")
-            break
-        else:
-            print("Please, insert a valid character: y or n")
-
-
-# Start the game
-play_hangman()
-restart_game()
+# Start the GUI main loop
+root.mainloop()
