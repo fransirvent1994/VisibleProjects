@@ -54,7 +54,7 @@ class HangmanGame:
         unique_letters = len(set(chosen_word))
         return chosen_word, unique_letters
 
-# Display the world with spaces between the letters
+# Display the word with spaces between the letters
     def get_display_word(self):
         return ''.join([letter if letter in self.correct_letters else '_' for letter in self.word])
 
@@ -73,6 +73,7 @@ class HangmanGame:
         }
         return hints.get(self.word, "No hint available")
 
+    # Functions to display labels which shows words, hints, etc.
     def update_labels(self):
         self.word_label.config(text=self.get_display_word())
         self.hints_label.config(text=self.get_hint())
@@ -89,7 +90,8 @@ class HangmanGame:
 
         self.entry_var.set("")
         self.update_labels()
-
+    
+    # Checks the letters to see if it is correct, valid or wrong, so it will show a text as convenience
     def check_letter(self, chosen_letter):
         if chosen_letter in self.correct_letters or chosen_letter in self.wrong_letters:
             print("You have already used that letter, use another one")
@@ -106,15 +108,18 @@ class HangmanGame:
         elif self.hits == self.unique_letters:
             self.game_over = self.win()
 
+    # Function when losing game. It shows the hidden word.
     def lose(self):
         print("You have run out of lives.")
         print("The hidden word was: " + self.word)
         return True
 
+    # Function when winning game.
     def win(self):
         print("Congratulations, you have found the word!")
         return True
 
+    # Function to restart the game
     def restart_game(self):
         self.master.destroy()
         root = tk.Tk()
