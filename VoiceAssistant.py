@@ -26,7 +26,7 @@ def audio_into_text():
     r = sr.Recognizer()
 
     # Micro configuration
-    with sr.Microphone() as origen:
+    with sr.Microphone() as origin:
 
         # Waiting time
         r.pause_threshold = 0.6  # Waiting time value
@@ -35,7 +35,7 @@ def audio_into_text():
         print("Say something")
 
         # Var to storage the audio
-        audio = r.listen(origen)
+        audio = r.listen(origin)
 
         try:
             # Search in google
@@ -110,7 +110,7 @@ def day_asking():
     # Var for day of the week
     week_day = day.weekday()
 
-    # dict for day names
+    # dict for day names (In Python number 0 is the first one)
     calendar = {0: "Monday",
                 1: "Tuesday",
                 2: "Wednesday",
