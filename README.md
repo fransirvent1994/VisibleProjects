@@ -10,6 +10,8 @@
 <p align="center">It´s said that a machine cannot be a friend, but I say yes, it can. This program interacts with you by asking orders, such as playing music, surfing in the net or even telling jokes. Unfortanetly, currently is in development to improve its knowledge and learning, but is plenty functional right now.</p>
 <h1 align="center"><ins>PDFGenerator</ins></h1>
 <p align="center">This program allows the user to create a PDF based in the FPDF library of Python.</p>
+<h1 align="center"><ins>Rock, paper, scissors, lizard, Spock game</ins></h1>
+<p align="center">Inspired by the classic game "Rock, paper, scissors" and a show from the TV that "maybe can hear about *coughbigbangtheorycough*", this program allows the user to input one of the options and play against the machine.</p>
 <h1><ins><i>🤖JavaScript🤖</i></ins></h1>
 <h1 align="center"><ins>Calculator</ins></h1>
 <p align="center">A calculator program which allows to interact with buttons and calculate numbers with different operations. Screen displayed too</p>
