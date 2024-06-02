@@ -25,4 +25,4 @@ while start_game:
 
     play_again = input("Play again? (Y/N): ").lower()
     if play_again != "y" and play_again != "yes":
-        start_game = False  # End the game loop
+        start_game = False
