@@ -1,0 +1,18 @@
+.options{
+    width: 100%;
+    size-adjust: auto;
+}
+
+
+input[type="button"]:hover{
+    width: auto; 
+    padding: auto; 
+    background-color: rgb(10, 0, 184); 
+    color: rgb(10, 9, 9); 
+    font-size: 24px; 
+    font-weight: bold; 
+    border: 20px; 
+    border-radius: 5px;
+    caption-side: bottom;
+
+}
