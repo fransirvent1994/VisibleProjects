@@ -1,27 +1,24 @@
+function play(userChoice) {
+    const choices = ['Rock', 'Paper', 'Scissors', 'Lizard', 'Spock'];
+    const computerChoice = choices[Math.floor(Math.random() * choices.length)];
+    const resultText = document.getElementById('result-text');
 
-start_game = True 
+    const result = getResult(userChoice, computerChoice);
+    resultText.textContent = `You chose ${userChoice} \n computer chose ${computerChoice}. ${result}`;
+}
 
-while (start_game)
-    options = ["paper", "scissors", "rock", "lizard", "spock"]
-    user = prompt("Choose an option: {', '.join(options)}: ").lower()
-    choice = random.choice(options)
+function getResult(userChoice, computerChoice) {
+    if (userChoice === computerChoice) {
+        return 'It\'s a tie!';
+    }
 
-    if user = choice: 
-        print(f"{user} vs {choice}") 
-        print("It's a draw!")
-    elif
-        (user == "paper" and choice in ["rock", "spock"])
-        or (user == "scissors" and choice in ["paper", "lizard"])
-        or (user == "rock" and choice in ["scissors", "lizard"])
-        or (user == "lizard" and choice in ["spock", "paper"])
-        or (user == "spock" and choice in ["rock", "scissors"])
-    )
-        print(f"{user} vs {choice}")
-        print("You win!")
-    else:
-        print(f"{user} vs {choice}")
-        print("You lose!")
-
-    play_again = input("Play again? (Y/N): ").lower()
-    if play_again != "y" and play_again != "yes"
-        start_game = False
+    if ((userChoice === 'Rock' && (computerChoice === 'Scissors' || computerChoice === 'Lizard')) ||
+        (userChoice === 'Paper' && (computerChoice === 'Rock' || computerChoice === 'Spock')) ||
+        (userChoice === 'Scissors' && (computerChoice === 'Paper' || computerChoice === 'Lizard')) ||
+        (userChoice === 'Lizard' && (computerChoice === 'Spock' || computerChoice === 'Paper')) ||
+        (userChoice === 'Spock' && (computerChoice === 'Scissors' || computerChoice === 'Rock'))) {
+        return 'You win!';
+    } else {
+        return 'You lose!';
+    }
+}
