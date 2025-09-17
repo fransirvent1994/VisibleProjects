@@ -1,0 +1,6 @@
+1, John, Doe, Valencia, 25
+2, Jane, Smith, Michigan, 45
+3, Bob, Johnson, Kentucky, 32
+4, Abraham, Lincoln, Colorado, 19
+5, Dean, Winchester, Michigan, 30
+6, Sam, Winchester, Michigan, 25
