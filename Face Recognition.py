@@ -1,75 +1,86 @@
 import cv2
 import face_recognition as fr
 
-# Load images
-control_picture = fr.load_image_file("insertimage.jpg")
-test_picture = fr.load_image_file("insertimage.jpg")
-another_test_picture = fr.load_image_file("insertimage.jpg")
 
-# Images to RGB
-control_picture = cv2.cvtColor(control_picture, cv2.COLOR_BGR2RGB)
-test_picture = cv2.cvtColor(test_picture, cv2.COLOR_BGR2RGB)
-another_test_picture = cv2.cvtColor(another_test_picture, cv2.COLOR_BGR2RGB)
+def load_and_convert_image(path: str):
+    image = fr.load_image_file(path)
+    return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-# Locate face
-face_A_location = fr.face_locations(control_picture)[0]
-coded_face_A = fr.face_encodings(control_picture)[0]
 
-face_B_location = fr.face_locations(test_picture)[0]
-coded_face_B = fr.face_encodings(test_picture)[0]
+def get_face_encoding(image):
+    locations = fr.face_locations(image)
+    if len(locations) == 0:
+        raise ValueError("No face detected")
+    encoding = fr.face_encodings(image, known_face_locations=locations)[0]
+    return locations[0], encoding
 
-face_C_location = fr.face_locations(another_test_picture)[0]
-coded_face_C = fr.face_encodings(another_test_picture)[0]
 
-# Show rectangle
-cv2.rectangle(control_picture,
-              (face_A_location[3], face_A_location[0]),
-              (face_A_location[1], face_A_location[2]),
-              (0, 255, 0),
-              2)
+def draw_rectangle(image, location, color=(0, 255, 0)):
+    top, right, bottom, left = location
+    cv2.rectangle(image, (left, top), (right, bottom), color, 2)
+    return image
 
-cv2.rectangle(test_picture,
-              (face_B_location[3], face_B_location[0]),
-              (face_B_location[1], face_B_location[2]),
-              (0, 255, 0),
-              2)
 
-cv2.rectangle(another_test_picture,
-              (face_C_location[3], face_C_location[0]),
-              (face_C_location[1], face_C_location[2]),
-              (0, 255, 0),
-              2)
+def compare_faces(encoding_ref, encoding_test):
+    result = fr.compare_faces([encoding_ref], encoding_test)[0]
+    distance = fr.face_distance([encoding_ref], encoding_test)[0]
+    return result, distance
 
-# Compare
-result_AB = fr.compare_faces([coded_face_A], coded_face_B)
-result_AC = fr.compare_faces([coded_face_A], coded_face_C)
 
-print(result_AB)
-print(result_AC)
+def resize_for_display(image, size=(390, 480)):
+    return cv2.resize(image, size)
 
-# Show images
-control_picture_resize = cv2.resize(control_picture, (390, 480))
-test_picture_resize = cv2.resize(test_picture, (390, 480))
-another_test_picture_resize = cv2.resize(another_test_picture, (390, 480))
-cv2.imshow("Control picture", control_picture_resize)
-cv2.imshow("Test picture", test_picture_resize)
-cv2.imshow("Picture 3", another_test_picture_resize)
 
-# Count the distance
-distanceAB = fr.face_distance([coded_face_A], coded_face_B)
-distanceAC = fr.face_distance([coded_face_A], coded_face_C)
-print(distanceAB)
-print(distanceAC)
+def show_images(images: dict):
+    for title, img in images.items():
+        cv2.imshow(title, resize_for_display(img))
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
-if result_AB == [True]:
-    print("Picture A and B match!")
-else:
-    print("Picture A and B don´t match")
 
-if result_AC == [True]:
-    print("Picture A and C match!")
-else:
-    print("Picture A and C not match")
+def main():
+    # Img URLs
+    control_path = input("Insert control image path: ")
+    test_path = input("Insert test image path: ")
+    another_test_path = input("Insert another test image path: ")
 
-# Keep the program open
-cv2.waitKey(0)
+    # Load imgs
+    control_img = load_and_convert_image(control_path)
+    test_img = load_and_convert_image(test_path)
+    another_test_img = load_and_convert_image(another_test_path)
+
+    # Encodings
+    face_A_loc, face_A_enc = get_face_encoding(control_img)
+    face_B_loc, face_B_enc = get_face_encoding(test_img)
+    face_C_loc, face_C_enc = get_face_encoding(another_test_img)
+
+    draw_rectangle(control_img, face_A_loc)
+    draw_rectangle(test_img, face_B_loc)
+    draw_rectangle(another_test_img, face_C_loc)
+
+    # Comparations
+    result_AB, dist_AB = compare_faces(face_A_enc, face_B_enc)
+    result_AC, dist_AC = compare_faces(face_A_enc, face_C_enc)
+
+    print(f"A vs B → Match: {result_AB}, Distance: {dist_AB:.4f}")
+    print(f"A vs C → Match: {result_AC}, Distance: {dist_AC:.4f}")
+
+    if result_AB:
+        print("Picture A and B match!")
+    else:
+        print("Picture A and B don’t match.")
+
+    if result_AC:
+        print("Picture A and C match!")
+    else:
+        print("Picture A and C don’t match.")
+
+    show_images({
+        "Control picture": control_img,
+        "Test picture": test_img,
+        "Another test picture": another_test_img
+    })
+
+
+if __name__ == "__main__":
+    main()

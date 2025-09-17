@@ -245,7 +245,3 @@ def petitions():
 
 
 petitions()
-
-"""This is a loop to see the available voices in the system
-for voice in engine.getProperty("voices"):
-    print(voice)"""
